@@ -35,35 +35,48 @@ def findFinish(w,h):
                 last = j    
    return last
 f= open("intermediate22.txt","a+")
-pixels = open("pixels3.txt","a+")
+#pixels = open("pixels3.txt","a+")
 Colored_Pixels = []
 
 imgNo=0
 
-for img in glob.glob("E:/ImagesFinal1/*.png"):            
+for img in glob.glob("F:\Data\*.png"):            
     print("Reading image no ",imgNo)
     imgNo+=1
 #    if(imgNo==2):
 #        break
     inputImage = cv2.imread(str(img))
+    if(str(img).find("Sep")==-1):
+        continue
     f.write('\n')
-    arr = str(img)[:-4].split('-')               
-    f.write(arr[0][16:])
+    arr = str(img)[:-4].split('-')   
+    arr1 =  arr[0][8:].split(' ')               
+    f.write(arr1[0])
     f.write(",")
-    if(arr[0]=='Fri' or arr[0]=='Sat'):
+    f.write(arr1[1])
+    f.write(",")
+    if(arr[1]=='Fri' or arr[1]=='Sat'):
         f.write("Yes,")
     else:
         f.write("No,")
+    f.write(arr[1])    
+    f.write(',')
+#    f.write(arr[2])    
+#    f.write(',')
+#    f.write(arr[3])    
+#    f.write(',')
+    
+#    f.write(arr[4])
     #f.write(str(inputImage))
-    if(arr[2]=="60"):
-        f.write(str(int(arr[1])+1))
+    if(arr[3]=="60"):
+        f.write(str(int(arr[2])+1))
         f.write(".")
         f.write("00")
         f.write(',')
     else:    
-        f.write(arr[1])
-        f.write(".")
         f.write(arr[2])
+        f.write(".")
+        f.write(arr[3])
         f.write(',')    
     #    cv2.imshow('final',inputImage)
     #    cv2.waitKey(0)
@@ -128,8 +141,9 @@ for img in glob.glob("E:/ImagesFinal1/*.png"):
           seg = seg+1
 
 f.close()
-pixels.close()
+#pixels.close()
 pixels = open("pixels2.txt","a+")
 
 for i in range(0,len(Colored_Pixels)):
-    pixels.write(str(Colored_Pixels[i][0])+","+str(Colored_Pixels[i][1])+"\n")         
+    pixels.write(str(Colored_Pixels[i][0])+","+str(Colored_Pixels[i][1])+"\n") 
+pixels.close()        

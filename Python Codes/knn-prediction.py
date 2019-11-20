@@ -1,13 +1,11 @@
 import cv2
 import pandas as pd
 import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
-dataset  = pd.read_csv('data.csv')
+dataset  = pd.read_csv(r'data.csv',sep=',',error_bad_lines=False)
 pos = 3
-X = dataset.iloc[:,:3]
+X = dataset.iloc[:,:4]
 
 def findInit(w,h):
     for j in range (0,h):
@@ -22,9 +20,23 @@ def findFinish(w,h):
             if(mask_red[j,i]>0 or mask_blue[j,i]>0 or mask_yellow[j,i]>0):
                 last = j    
    return last
+
+def definePixels(s,f,w):
+   print(s,f) 
+   fi= open("pixels3.txt","a+")
+   for j in range (s,f):
+        for i in range (0,w):
+             if(mask_red[j,i]>0 or mask_blue[j,i]>0 or mask_yellow[j,i]>0):
+                 fi.write(str(j))
+                 fi.write(',')
+                 fi.write(str(i))
+                 fi.write('\n')
+   fi.close()              
+            
+     
 #Y = dataset.iloc[:,pos+1]
 predictions = []
-for pos in range(3,14):
+for pos in range(4,dataset.shape[1]):
     Y = dataset.iloc[:,pos]
 #    pos = pos+1
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.1, random_state=0) 
@@ -45,14 +57,14 @@ for pos in range(3,14):
     knn = KNeighborsClassifier(n_neighbors = 5, p = 2, metric='minkowski')
     #knn.fit(X_train_std, y_train)
     knn.fit(X, Y)
-    predictions.append(knn.predict([[0,1,12.25]]))  
+    predictions.append(knn.predict([[3,0,2,12.25]]))  
 #    print('The accuracy of the Knn  classifier on training data is {:.2f}'.format(knn.score(X_train_std, y_train)))
 #    print('The accuracy of the Knn classifier on test data is {:.2f}'.format(knn.score(X_test_std, y_test)))
 
 
-inputImage = cv2.imread("E:\Fri-0-30.png")
+inputImage = cv2.imread("E:\ImagesNew\Fri-0-15.png")
 inputImage1 = inputImage
-with open('pixels2.txt', 'r') as file:
+with open('pixels3.txt', 'r') as file:
     # read a list of lines into data
     data = file.readlines()
 seg = 0
@@ -74,17 +86,19 @@ mask_blue = cv2.inRange(hsv, lower_blue, upper_blue)
 
 start = findInit(width,height)
 finish = findFinish(width,height)
+#definePixels(start,finish,width)       
+
 
 for line in range (0,len(data)):
     X = int(data[line].split(",")[0])
     Y = int(data[line].split(",")[1])
     seg = -1
-    for f in range(0,11):
+    for f in range(0,10):
         if(X>=start+40*f and X<start+40*(f+1)):
             seg = f
-        if(seg==-1):
-            seg = 10
-            
+    if(seg==-1):
+        seg = 9
+        
     if(predictions[seg]=='Y'):
         inputImage1[X,Y] = (0,255,255)
     if(predictions[seg]=='R'):
